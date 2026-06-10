@@ -36,7 +36,13 @@ async function bootstrap(): Promise<void> {
 
   // Allow graceful shutdown hooks (DB connections, queues, etc.).
   app.enableShutdownHooks();
-  app.enableCors();
+  app.enableCors({
+    origin: appConfig.corsOrigins,
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true,
+    maxAge: 86400,
+  });
 
   if (appConfig.swaggerEnabled) {
     const swaggerConfig = new DocumentBuilder()

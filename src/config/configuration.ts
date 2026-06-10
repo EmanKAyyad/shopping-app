@@ -10,6 +10,7 @@ export interface AppConfig {
   port: number;
   apiPrefix: string;
   swaggerEnabled: boolean;
+  corsOrigins: string[];
 }
 
 export interface DatabaseConfig {
@@ -31,6 +32,10 @@ export default (): Configuration => ({
     port: parseInt(process.env.PORT ?? '3000', 10),
     apiPrefix: process.env.API_PREFIX ?? 'api/v1',
     swaggerEnabled: (process.env.SWAGGER_ENABLED ?? 'true') === 'true',
+    corsOrigins: (process.env.CORS_ORIGIN ?? 'http://localhost:3000')
+      .split(',')
+      .map((o) => o.trim())
+      .filter(Boolean),
   },
   database: {
     host: process.env.DATABASE_HOST ?? 'localhost',

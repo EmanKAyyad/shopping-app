@@ -52,6 +52,10 @@ class EnvironmentVariables {
 
   @IsString()
   @IsOptional()
+  CORS_ORIGIN = 'http://localhost:3000';
+
+  @IsString()
+  @IsOptional()
   DATABASE_HOST = 'localhost';
 
   @Type(() => Number)
