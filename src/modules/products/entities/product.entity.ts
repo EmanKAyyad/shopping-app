@@ -12,12 +12,6 @@ export class Product extends BaseEntity {
   price: number;
 
   @ApiProperty()
-  currency: string;
-
-  @ApiProperty()
-  sku: string;
-
-  @ApiProperty()
   stock: number;
 
   @ApiProperty({ nullable: true })

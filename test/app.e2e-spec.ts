@@ -2,8 +2,8 @@ import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import request from 'supertest';
 import { App } from 'supertest/types';
-import { TransformInterceptor } from './../src/common/interceptors/transform.interceptor';
 import { AppModule } from './../src/app.module';
+import { TransformInterceptor } from './../src/common/interceptors/transform.interceptor';
 
 describe('Shopping API (e2e)', () => {
   let app: INestApplication<App>;
@@ -58,7 +58,6 @@ describe('Shopping API (e2e)', () => {
         name: 'E2E Product',
         description: 'created during e2e',
         price: 2500,
-        sku: 'E2E-001',
         stock: 5,
       })
       .expect(201);

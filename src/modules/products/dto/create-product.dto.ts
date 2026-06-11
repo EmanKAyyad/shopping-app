@@ -24,17 +24,6 @@ export class CreateProductDto {
   @Min(0)
   price: number;
 
-  @ApiProperty({ example: 'USD', default: 'USD' })
-  @IsString()
-  @Length(3, 3)
-  @IsOptional()
-  currency = 'USD';
-
-  @ApiProperty({ example: 'CHR-AERON-001' })
-  @IsString()
-  @Length(1, 64)
-  sku: string;
-
   @ApiProperty({ example: 50 })
   @IsInt()
   @Min(0)

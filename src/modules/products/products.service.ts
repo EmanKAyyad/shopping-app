@@ -1,8 +1,4 @@
-import {
-  ConflictException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Paginated } from '../../common/interfaces/api-response.interface';
 import { CreateProductDto } from './dto/create-product.dto';
 import { QueryProductDto } from './dto/query-product.dto';
@@ -21,13 +17,6 @@ export class ProductsService {
   private readonly products = new Map<string, Product>();
 
   create(dto: CreateProductDto): Product {
-    const skuTaken = [...this.products.values()].some((p) => p.sku === dto.sku);
-    if (skuTaken) {
-      throw new ConflictException(
-        `Product with SKU "${dto.sku}" already exists`,
-      );
-    }
-
     const product = new Product({ ...dto, categoryId: dto.categoryId ?? null });
     this.products.set(product.id, product);
     return product;
