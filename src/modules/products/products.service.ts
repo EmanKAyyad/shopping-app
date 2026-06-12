@@ -1,8 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Paginated } from '../../common/interfaces/api-response.interface';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { CreateProductDto } from './dto/create-product.dto';
-import { QueryProductDto } from './dto/query-product.dto';
-import { UpdateProductDto } from './dto/update-product.dto';
 import { Product } from './entities/product.entity';
 
 /**
@@ -14,71 +13,77 @@ import { Product } from './entities/product.entity';
  */
 @Injectable()
 export class ProductsService {
-  private readonly products = new Map<string, Product>();
+  constructor(
+    @InjectRepository(Product)
+    private productRepository: Repository<Product>,
+  ) {}
 
-  create(dto: CreateProductDto): Product {
-    const product = new Product({ ...dto, categoryId: dto.categoryId ?? null });
-    this.products.set(product.id, product);
-    return product;
+  async create(dto: CreateProductDto): Promise<Product> {
+    const product = this.productRepository.create(dto);
+    return this.productRepository.save(product);
   }
 
-  findAll(query: QueryProductDto): Paginated<Product> {
-    let items = [...this.products.values()];
+  // findAll(query: QueryProductDto): Paginated<Product> {
+  //   let items = [...this.products.values()];
 
-    if (query.search) {
-      const term = query.search.toLowerCase();
-      items = items.filter(
-        (p) =>
-          p.name.toLowerCase().includes(term) ||
-          p.description.toLowerCase().includes(term),
-      );
-    }
-    if (query.categoryId) {
-      items = items.filter((p) => p.categoryId === query.categoryId);
-    }
-    if (query.minPrice !== undefined) {
-      items = items.filter((p) => p.price >= query.minPrice!);
-    }
-    if (query.maxPrice !== undefined) {
-      items = items.filter((p) => p.price <= query.maxPrice!);
-    }
+  //   if (query.search) {
+  //     const term = query.search.toLowerCase();
+  //     items = items.filter(
+  //       (p) =>
+  //         p.name.toLowerCase().includes(term) ||
+  //         p.description.toLowerCase().includes(term),
+  //     );
+  //   }
+  //   if (query.categoryId) {
+  //     items = items.filter((p) => p.categoryId === query.categoryId);
+  //   }
+  //   if (query.minPrice !== undefined) {
+  //     items = items.filter((p) => p.price >= query.minPrice!);
+  //   }
+  //   if (query.maxPrice !== undefined) {
+  //     items = items.filter((p) => p.price <= query.maxPrice!);
+  //   }
 
-    const total = items.length;
-    const paged = items.slice(query.skip, query.skip + query.limit);
-    const pageCount = Math.ceil(total / query.limit) || 1;
+  //   const total = items.length;
+  //   const paged = items.slice(query.skip, query.skip + query.limit);
+  //   const pageCount = Math.ceil(total / query.limit) || 1;
 
-    return {
-      items: paged,
-      meta: {
-        total,
-        page: query.page,
-        limit: query.limit,
-        pageCount,
-        hasNextPage: query.page < pageCount,
-        hasPreviousPage: query.page > 1,
-      },
-    };
+  //   return {
+  //     items: paged,
+  //     meta: {
+  //       total,
+  //       page: query.page,
+  //       limit: query.limit,
+  //       pageCount,
+  //       hasNextPage: query.page < pageCount,
+  //       hasPreviousPage: query.page > 1,
+  //     },
+  //   };
+  // }
+
+  async findAll() {
+    return await this.productRepository.find();
   }
 
-  findOne(id: string): Product {
-    const product = this.products.get(id);
+  async findOne(id: string): Promise<Product | null> {
+    const product = await this.productRepository.findOneBy({ id });
     if (!product) {
       throw new NotFoundException(`Product "${id}" not found`);
     }
     return product;
   }
 
-  update(id: string, dto: UpdateProductDto): Product {
-    const product = this.findOne(id);
-    Object.assign(product, dto);
-    product.touch();
-    this.products.set(id, product);
-    return product;
-  }
+  // update(id: string, dto: UpdateProductDto): Product {
+  //   const product = this.findOne(id);
+  //   Object.assign(product, dto);
+  //   product.touch();
+  //   this.products.set(id, product);
+  //   return product;
+  // }
 
-  remove(id: string): void {
-    if (!this.products.delete(id)) {
-      throw new NotFoundException(`Product "${id}" not found`);
-    }
-  }
+  // remove(id: string): void {
+  //   if (!this.products.delete(id)) {
+  //     throw new NotFoundException(`Product "${id}" not found`);
+  //   }
+  // }
 }

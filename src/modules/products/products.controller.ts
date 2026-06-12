@@ -1,26 +1,8 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  HttpCode,
-  HttpStatus,
-  Param,
-  ParseUUIDPipe,
-  Patch,
-  Post,
-  Query,
-} from '@nestjs/common';
-import {
-  ApiCreatedResponse,
-  ApiOkResponse,
-  ApiOperation,
-  ApiTags,
-} from '@nestjs/swagger';
+import { Body, Controller, Get, Post, Query } from '@nestjs/common';
+import { ApiCreatedResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Public } from '../../common/decorators/public.decorator';
 import { CreateProductDto } from './dto/create-product.dto';
 import { QueryProductDto } from './dto/query-product.dto';
-import { UpdateProductDto } from './dto/update-product.dto';
 import { Product } from './entities/product.entity';
 import { ProductsService } from './products.service';
 
@@ -32,7 +14,7 @@ export class ProductsController {
   @Post()
   @ApiOperation({ summary: 'Create a product' })
   @ApiCreatedResponse({ type: Product })
-  create(@Body() dto: CreateProductDto): Product {
+  async create(@Body() dto: CreateProductDto): Promise<Product> {
     return this.productsService.create(dto);
   }
 
@@ -40,31 +22,31 @@ export class ProductsController {
   @Get()
   @ApiOperation({ summary: 'List products (paginated & filterable)' })
   findAll(@Query() query: QueryProductDto) {
-    return this.productsService.findAll(query);
+    return this.productsService.findAll();
   }
 
-  @Public()
-  @Get(':id')
-  @ApiOperation({ summary: 'Get a product by id' })
-  @ApiOkResponse({ type: Product })
-  findOne(@Param('id', ParseUUIDPipe) id: string): Product {
-    return this.productsService.findOne(id);
-  }
+  // @Public()
+  // @Get(':id')
+  // @ApiOperation({ summary: 'Get a product by id' })
+  // @ApiOkResponse({ type: Product })
+  // findOne(@Param('id', ParseUUIDPipe) id: string): Product {
+  //   return this.productsService.findOne(id);
+  // }
 
-  @Patch(':id')
-  @ApiOperation({ summary: 'Update a product' })
-  @ApiOkResponse({ type: Product })
-  update(
-    @Param('id', ParseUUIDPipe) id: string,
-    @Body() dto: UpdateProductDto,
-  ): Product {
-    return this.productsService.update(id, dto);
-  }
+  // @Patch(':id')
+  // @ApiOperation({ summary: 'Update a product' })
+  // @ApiOkResponse({ type: Product })
+  // update(
+  //   @Param('id', ParseUUIDPipe) id: string,
+  //   @Body() dto: UpdateProductDto,
+  // ): Product {
+  //   return this.productsService.update(id, dto);
+  // }
 
-  @Delete(':id')
-  @HttpCode(HttpStatus.NO_CONTENT)
-  @ApiOperation({ summary: 'Delete a product' })
-  remove(@Param('id', ParseUUIDPipe) id: string): void {
-    this.productsService.remove(id);
-  }
+  // @Delete(':id')
+  // @HttpCode(HttpStatus.NO_CONTENT)
+  // @ApiOperation({ summary: 'Delete a product' })
+  // remove(@Param('id', ParseUUIDPipe) id: string): void {
+  //   this.productsService.remove(id);
+  // }
 }

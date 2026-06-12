@@ -1,4 +1,8 @@
 import { Global, Module } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { DatabaseConfig } from '../config';
+import { Product } from '../modules/products/entities/product.entity';
 
 /**
  * Central place to wire the persistence layer.
@@ -14,7 +18,24 @@ import { Global, Module } from '@nestjs/common';
  */
 @Global()
 @Module({
-  imports: [],
+  imports: [
+    TypeOrmModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => {
+        const db = config.getOrThrow<DatabaseConfig>('database');
+        return {
+          type: 'postgres',
+          host: db.host,
+          port: db.port,
+          username: db.username,
+          password: db.password,
+          database: db.name,
+          entities: [Product],
+          synchronize: true,
+        };
+      },
+    }),
+  ],
   providers: [],
   exports: [],
 })

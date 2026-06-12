@@ -14,6 +14,7 @@ import { UsersModule } from './modules/users/users.module';
   imports: [
     // Global, validated configuration available everywhere via ConfigService.
     ConfigModule.forRoot({
+      envFilePath: '.env',
       isGlobal: true,
       cache: true,
       load: [configuration],

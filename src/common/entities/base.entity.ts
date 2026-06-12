@@ -1,4 +1,8 @@
-import { randomUUID } from 'node:crypto';
+import {
+  CreateDateColumn,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 
 /**
  * Common fields shared by every domain entity. When a real ORM is wired
@@ -6,15 +10,14 @@ import { randomUUID } from 'node:crypto';
  * provide a consistent identity + audit shape across the in-memory stores.
  */
 export abstract class BaseEntity {
+  @PrimaryGeneratedColumn('uuid')
   id: string;
-  createdAt: Date;
-  updatedAt: Date;
 
-  constructor() {
-    this.id = randomUUID();
-    this.createdAt = new Date();
-    this.updatedAt = new Date();
-  }
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
 
   /** Refresh the `updatedAt` audit timestamp after a mutation. */
   touch(): void {

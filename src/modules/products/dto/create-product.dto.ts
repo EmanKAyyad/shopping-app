@@ -33,4 +33,8 @@ export class CreateProductDto {
   @IsUUID()
   @IsOptional()
   categoryId?: string;
+
+  @ApiProperty()
+  @IsUUID()
+  createdById?: string;
 }
