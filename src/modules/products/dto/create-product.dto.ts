@@ -5,6 +5,7 @@ import {
   IsString,
   IsUUID,
   Length,
+  Max,
   Min,
 } from 'class-validator';
 
@@ -16,12 +17,13 @@ export class CreateProductDto {
 
   @ApiProperty({ example: 'Ergonomic office chair' })
   @IsString()
-  @Length(0, 2000)
+  @Length(0, 1000)
   description: string;
 
   @ApiProperty({ example: 119900, description: 'Price in minor units (cents)' })
   @IsInt()
   @Min(0)
+  @Max(999999)
   price: number;
 
   @ApiProperty({ example: 50 })

@@ -15,14 +15,14 @@ export class ProductsController {
   @ApiOperation({ summary: 'Create a product' })
   @ApiCreatedResponse({ type: Product })
   async create(@Body() dto: CreateProductDto): Promise<Product> {
-    return this.productsService.create(dto);
+    return await this.productsService.create(dto);
   }
 
   @Public()
   @Get()
   @ApiOperation({ summary: 'List products (paginated & filterable)' })
-  findAll(@Query() query: QueryProductDto) {
-    return this.productsService.findAll();
+  async findAll(@Query() query: QueryProductDto) {
+    return await this.productsService.findAll(query);
   }
 
   // @Public()

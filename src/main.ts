@@ -23,7 +23,6 @@ async function bootstrap(): Promise<void> {
       whitelist: true, // drop unknown properties
       forbidNonWhitelisted: true, // 400 on unknown properties
       transform: true, // instantiate DTO classes & coerce types
-      transformOptions: { enableImplicitConversion: true },
     }),
   );
 

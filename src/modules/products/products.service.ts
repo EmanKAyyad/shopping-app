@@ -1,7 +1,10 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Between, Like, Repository } from 'typeorm';
+import { ERROR_FETCHING_LIST } from '../../common/constants/error.const';
+import { MAX_PRICE, MIN_PRICE } from '../../common/constants/filter.const';
 import { CreateProductDto } from './dto/create-product.dto';
+import { QueryProductDto } from './dto/query-product.dto';
 import { Product } from './entities/product.entity';
 
 /**
@@ -23,55 +26,56 @@ export class ProductsService {
     return this.productRepository.save(product);
   }
 
-  // findAll(query: QueryProductDto): Paginated<Product> {
-  //   let items = [...this.products.values()];
+  async findAll(query: QueryProductDto) {
+    const where = {};
 
-  //   if (query.search) {
-  //     const term = query.search.toLowerCase();
-  //     items = items.filter(
-  //       (p) =>
-  //         p.name.toLowerCase().includes(term) ||
-  //         p.description.toLowerCase().includes(term),
-  //     );
-  //   }
-  //   if (query.categoryId) {
-  //     items = items.filter((p) => p.categoryId === query.categoryId);
-  //   }
-  //   if (query.minPrice !== undefined) {
-  //     items = items.filter((p) => p.price >= query.minPrice!);
-  //   }
-  //   if (query.maxPrice !== undefined) {
-  //     items = items.filter((p) => p.price <= query.maxPrice!);
-  //   }
-
-  //   const total = items.length;
-  //   const paged = items.slice(query.skip, query.skip + query.limit);
-  //   const pageCount = Math.ceil(total / query.limit) || 1;
-
-  //   return {
-  //     items: paged,
-  //     meta: {
-  //       total,
-  //       page: query.page,
-  //       limit: query.limit,
-  //       pageCount,
-  //       hasNextPage: query.page < pageCount,
-  //       hasPreviousPage: query.page > 1,
-  //     },
-  //   };
-  // }
-
-  async findAll() {
-    return await this.productRepository.find();
-  }
-
-  async findOne(id: string): Promise<Product | null> {
-    const product = await this.productRepository.findOneBy({ id });
-    if (!product) {
-      throw new NotFoundException(`Product "${id}" not found`);
+    if (query.search?.trim()) {
+      where['name'] = Like(`%${query.search ?? ''}%`);
     }
-    return product;
+
+    if (query.minPrice && query.maxPrice) {
+      where['price'] = Between(
+        query.minPrice ?? MIN_PRICE,
+        query.maxPrice ?? MAX_PRICE,
+      );
+    }
+
+    if (query.categoryId) {
+      where['categoryId'] = query.categoryId;
+    }
+
+    const [products, total] = await this.productRepository.findAndCount({
+      where,
+      take: query.limit,
+      skip: query.skip,
+    });
+
+    if (!products) {
+      throw new NotFoundException(ERROR_FETCHING_LIST('products'));
+    }
+
+    const pageCount = Math.ceil(total / query.limit) || 1;
+
+    return {
+      items: products,
+      meta: {
+        total,
+        page: query.page,
+        limit: query.limit,
+        pageCount,
+        hasNextPage: query.page < pageCount,
+        hasPreviousPage: query.page > 1,
+      },
+    };
   }
+
+  // async findOne(id: string): Promise<Product | null> {
+  //   const product = await this.productRepository.findOneBy({ id });
+  //   if (!product) {
+  //     throw new NotFoundException(`Product "${id}" not found`);
+  //   }
+  //   return product;
+  // }
 
   // update(id: string, dto: UpdateProductDto): Product {
   //   const product = this.findOne(id);
