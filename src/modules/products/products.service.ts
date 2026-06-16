@@ -69,13 +69,13 @@ export class ProductsService {
     };
   }
 
-  // async findOne(id: string): Promise<Product | null> {
-  //   const product = await this.productRepository.findOneBy({ id });
-  //   if (!product) {
-  //     throw new NotFoundException(`Product "${id}" not found`);
-  //   }
-  //   return product;
-  // }
+  async findOne(id: string): Promise<Product | null> {
+    const product = await this.productRepository.findOneBy({ id });
+    if (!product) {
+      throw new NotFoundException(`Product "${id}" not found`);
+    }
+    return product;
+  }
 
   // update(id: string, dto: UpdateProductDto): Product {
   //   const product = this.findOne(id);
@@ -85,9 +85,11 @@ export class ProductsService {
   //   return product;
   // }
 
-  // remove(id: string): void {
-  //   if (!this.products.delete(id)) {
-  //     throw new NotFoundException(`Product "${id}" not found`);
-  //   }
-  // }
+  async remove(id: string) {
+    const result = await this.productRepository.delete(id);
+    console.log(result);
+    if (result.affected === 0) {
+      throw new NotFoundException(`Product ${id} not found`);
+    }
+  }
 }
