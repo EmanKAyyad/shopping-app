@@ -5,6 +5,7 @@ import { ERROR_FETCHING_LIST } from '../../common/constants/error.const';
 import { MAX_PRICE, MIN_PRICE } from '../../common/constants/filter.const';
 import { CreateProductDto } from './dto/create-product.dto';
 import { QueryProductDto } from './dto/query-product.dto';
+import { UpdateProductDto } from './dto/update-product.dto';
 import { Product } from './entities/product.entity';
 
 /**
@@ -77,13 +78,14 @@ export class ProductsService {
     return product;
   }
 
-  // update(id: string, dto: UpdateProductDto): Product {
-  //   const product = this.findOne(id);
-  //   Object.assign(product, dto);
-  //   product.touch();
-  //   this.products.set(id, product);
-  //   return product;
-  // }
+  async update(id: string, dto: UpdateProductDto) {
+    const { version, ...changes } = dto;
+
+    const product = await this.productRepository.preload({ id, ...changes });
+    if (!product) throw new NotFoundException();
+
+    return this.productRepository.save({ ...product, version });
+  }
 
   async remove(id: string) {
     const result = await this.productRepository.delete(id);

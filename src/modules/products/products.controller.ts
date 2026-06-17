@@ -7,6 +7,7 @@ import {
   HttpStatus,
   Param,
   ParseUUIDPipe,
+  Patch,
   Post,
   Query,
 } from '@nestjs/common';
@@ -19,6 +20,7 @@ import {
 import { Public } from '../../common/decorators/public.decorator';
 import { CreateProductDto } from './dto/create-product.dto';
 import { QueryProductDto } from './dto/query-product.dto';
+import { UpdateProductDto } from './dto/update-product.dto';
 import { Product } from './entities/product.entity';
 import { ProductsService } from './products.service';
 
@@ -49,15 +51,15 @@ export class ProductsController {
     return this.productsService.findOne(id);
   }
 
-  // @Patch(':id')
-  // @ApiOperation({ summary: 'Update a product' })
-  // @ApiOkResponse({ type: Product })
-  // update(
-  //   @Param('id', ParseUUIDPipe) id: string,
-  //   @Body() dto: UpdateProductDto,
-  // ): Product {
-  //   return this.productsService.update(id, dto);
-  // }
+  @Patch(':id')
+  @ApiOperation({ summary: 'Update a product' })
+  @ApiOkResponse({ type: Product })
+  update(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() dto: UpdateProductDto,
+  ) {
+    return this.productsService.update(id, dto);
+  }
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)

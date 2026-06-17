@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Column, Entity } from 'typeorm';
+import { Column, Entity, VersionColumn } from 'typeorm';
 import { BaseEntity } from '../../../common/entities/base.entity';
 
 @Entity('product')
@@ -27,6 +27,9 @@ export class Product extends BaseEntity {
   @ApiProperty()
   @Column('uuid')
   createdById: string;
+
+  @VersionColumn()
+  version: number;
 
   constructor() {
     super();
